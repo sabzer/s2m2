@@ -27,7 +27,7 @@ def write_results(file_name, paths, problem_path = None):
 def read_configuration(file_name):
 
     with open(file_name, "r") as file:
-        data = yaml.load(file)
+        data = yaml.safe_load(file)
 
         min_segs = data["min_segs"]
         max_segs = data["max_segs"]
@@ -38,7 +38,7 @@ def read_configuration(file_name):
 def read_problem(file_name):
 
     with open(file_name, "r") as file:
-        data = yaml.load(file)
+        data = yaml.safe_load(file)
         name = data["name"]
         limits = data["limits"]
         Obstacles = [read_polytope(obs) for obs in data["obstacles"]]

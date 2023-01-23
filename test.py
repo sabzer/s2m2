@@ -21,8 +21,8 @@ def test(env, problem_path, config_path):
     name = '[%s]'%(env)
 
     trajs = ref2traj(refs)
-    # plot_results(agents, limits, Obstacles, Thetas, Goals, trajs, name, refs=refs)
+    plot_results(agents, limits, Obstacles, Thetas, Goals, trajs, name, refs=refs)
 
     return refs
-
-test("zigzag", "problems/zigzag/problem.yaml", "problems/zigzag/config.yaml")
+env = 'parking'
+test(env, "problems/{}/problem.yaml".format(env), "problems/{}/config.yaml".format(env))
