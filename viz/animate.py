@@ -21,8 +21,8 @@ def animate_results(models,  limits, obstacles, Thetas, goals, ma_segs, name):
         for idx in range(agent_num):
             ref_x, ref_y, _, tru_x, tru_y, _, times = paths[idx]
             ref_patch = plt.Circle((ref_x[0], ref_y[0]), 0, fc='k')
-            tru_patch = plt.Circle((tru_x[0], tru_y[0]), models[idx].size, fc='navy', alpha = 0.7)
-            err_patch = plt.Circle((ref_x[0], ref_y[0]), models[idx].size, fc='lightsteelblue', alpha = 0.4)
+            tru_patch = plt.Circle((tru_x[0], tru_y[0]), models[idx].size, fc='navy', alpha = 0.7,label='True Traj')
+            err_patch = plt.Circle((ref_x[0], ref_y[0]), models[idx].size, fc='lightsteelblue', alpha = 0.4,label = 'Ref. Traj')
             ref_patches.append(ref_patch)
             tru_patches.append(tru_patch)
             err_patches.append(err_patch)
@@ -53,6 +53,7 @@ def animate_results(models,  limits, obstacles, Thetas, goals, ma_segs, name):
                 else: error  = (models[idx].size + models[idx].bloating(step))
                 err_patches[idx].width = 2 * error
                 err_patches[idx].height = 2 * error
+            plt.legend()
             return ref_patches + tru_patches + err_patches
 
 
