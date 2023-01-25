@@ -25,9 +25,17 @@ class Car(Agent):
 		vref, wref = uref
 		k1, k2, k3 = self.k
 
+		# The following is a controller on the 
+		# transformed coordinate system defined by the reference position-angle.
+		# That is, the coordinate system has its origin at (xref, yref), and its
+		# x-axis pointing towards the angle defined by thetaref.
+		# The state of the car is the vector [xe,ye,thetae].
 		xe = cos(theta) * (xref - x) + sin(theta) * (yref - y)
 		ye = -sin(theta) * (xref - x) + cos(theta) * (yref - y)
 		thetae = thetaref - theta
+
+		# I do not fully see why the following controller works, except that
+		# its equilibrium point matches xe=ye=thetae=0, v=vref, w=wref.
 		v = vref * cos(thetae) + k1 * xe
 		w = wref + vref * (k2 * ye + k3 * sin(thetae))
 
