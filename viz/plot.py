@@ -2,12 +2,13 @@ from viz.util import *
 from algs.collision import *
 import os
 
-def plot_results(models, limits, Obstacles, Thetas, Goals, ma_segs, name, MO = [], refs = None):
+def plot_results(models, limits, Obstacles, Thetas, Goals, ma_segs, name, MO = [], refs = None,save_to_path=None):
 	plt.close('all')
 	agent_num = len(models)
-	fig, axes = plot_env(limits, Obstacles)
-	# plot_goals(Goals)
-	# plot_thetas(Thetas)
+	fig = plt.figure()
+	fig, axes = plot_env(fig,limits, Obstacles)
+	plot_goals(Goals)
+	plot_thetas(Thetas)
 
 	# for mo in MO:
 	# 	for obs in mo:
@@ -31,8 +32,9 @@ def plot_results(models, limits, Obstacles, Thetas, Goals, ma_segs, name, MO = [
 			axes.plot(ref_x, ref_y, ref_z, color='k')
 			axes.plot(tru_x, tru_y, tru_z, 'r--')
 
+	plt.legend()
 	fig.show()
-	path = os.path.abspath("results/%s.svg" % (name))
-	fig.savefig(path, bbox_inches='tight', pad_inches = 0)
+	if not save_to_path is None:
+		fig.savefig(save_to_path, bbox_inches='tight', pad_inches = 0)
 	return None
 

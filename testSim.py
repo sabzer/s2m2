@@ -20,10 +20,11 @@ def test(env, problem_path, config_path):
     name = '[%s]'%(env)
 
     trajs = ref2traj(refs)
-    plot_results(agents, limits, Obstacles, Thetas, Goals, trajs, name, refs=refs)
-    animate_results(agents,  limits, Obstacles, Thetas, Goals, trajs, name)
+    # plot_results(agents, limits, Obstacles, Thetas, Goals, trajs, name, refs=refs)
+    # animate_results(agents,  limits, Obstacles, Thetas, Goals, trajs, name)
     return refs
 # env = 'parking'
 
-env = 'zigzag'
-test(env, "problems/{}/problem.yaml".format(env), "problems/{}/config.yaml".format(env))
+if __name__ == '__main__':
+    env = 'zigzag'
+    test(env, "problems/{}/problem.yaml".format(env), "problems/{}/config.yaml".format(env))

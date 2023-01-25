@@ -9,8 +9,7 @@ from models.auv import *
 from models.hovercraft import *
 from util import *
 
-def plot_env(map_limits, Obstacles):
-    fig = plt.figure()
+def plot_env(fig,map_limits, Obstacles):
     if len(map_limits) == 2:
         # Configure
         xmin, xmax = map_limits[0]
@@ -53,18 +52,18 @@ def plot_env(map_limits, Obstacles):
     return fig, ax
 
 def plot_goals(Goals):
-    True
-    for A, b in Goals:
+
+    for _,(A, b) in enumerate(Goals):
         poly = Polygon(ppm.duality.compute_polytope_vertices(A, b))
         x, y = poly.exterior.xy
-        plt.fill(x, y, facecolor='g', alpha=0.3)
+        plt.fill(x, y, facecolor='g', alpha=0.3,label='Goals' if _==0 else '')
 
 def plot_thetas(thetas):
-    for x, y in thetas:
+    for _,(x, y) in enumerate(thetas):
         A, b = make_rectangle_center(x, y, 5, 5)
         poly = Polygon(ppm.duality.compute_polytope_vertices(A, b))
         x, y = poly.exterior.xy
-        plt.fill(x, y, facecolor='blue', alpha=0.3)
+        plt.fill(x, y, facecolor='blue', alpha=0.3,label='Starts' if _==0 else'')
 
 def extract_paths(models, ma_thetas, ma_segs):
     # viz initial states and trajectories

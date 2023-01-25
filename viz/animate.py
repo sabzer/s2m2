@@ -3,15 +3,16 @@ from viz.util import *
 import os
 from models.agent import *
 
-def animate_results(models,  limits, obstacles, Thetas, goals, ma_segs, name):
+def animate_results(models,limits, obstacles, Thetas, goals,ma_segs, paths, save_to_path=None):
     agent_num = len(models)
     dim = len(limits)
-    fig, axes = plot_env(limits, obstacles)
+    fig = plt.figure(0)
+    fig, axes = plot_env(fig,limits, obstacles)
     plot_goals(goals)
 
     interval = 20
     total_frames = 500
-    total_time = max([ma_segs[idx][-1][0][-1] for idx in range(agent_num)])
+    total_time = max([ma_segs[idx][0][-1] for idx in range(agent_num)])
 
     if dim == 2:
         paths = extract_paths(models, Thetas, ma_segs)
@@ -21,8 +22,8 @@ def animate_results(models,  limits, obstacles, Thetas, goals, ma_segs, name):
         for idx in range(agent_num):
             ref_x, ref_y, _, tru_x, tru_y, _, times = paths[idx]
             ref_patch = plt.Circle((ref_x[0], ref_y[0]), 0, fc='k')
-            tru_patch = plt.Circle((tru_x[0], tru_y[0]), models[idx].size, fc='navy', alpha = 0.7,label='True Traj')
-            err_patch = plt.Circle((ref_x[0], ref_y[0]), models[idx].size, fc='lightsteelblue', alpha = 0.4,label = 'Ref. Traj')
+            tru_patch = plt.Circle((tru_x[0], tru_y[0]), models[idx].size, fc='navy', alpha = 0.7)
+            err_patch = plt.Circle((ref_x[0], ref_y[0]), models[idx].size, fc='lightsteelblue', alpha = 0.4)
             ref_patches.append(ref_patch)
             tru_patches.append(tru_patch)
             err_patches.append(err_patch)
@@ -53,7 +54,6 @@ def animate_results(models,  limits, obstacles, Thetas, goals, ma_segs, name):
                 else: error  = (models[idx].size + models[idx].bloating(step))
                 err_patches[idx].width = 2 * error
                 err_patches[idx].height = 2 * error
-            plt.legend()
             return ref_patches + tru_patches + err_patches
 
 
@@ -61,5 +61,6 @@ def animate_results(models,  limits, obstacles, Thetas, goals, ma_segs, name):
                                       blit=True, interval = interval)
 
         # fig.subplots_adjust(left=0.01, bottom=0.01, right=0.99, top=0.99, wspace=None, hspace=None)
-        path = os.path.abspath("results/plots/%s.mp4" % (name))
-        ani.save(path, writer='ffmpeg')
+        if not save_to_path is None:
+            ani.save(save_to_path, writer='ffmpeg')
+        return ani
