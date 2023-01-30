@@ -9,6 +9,15 @@ from models.auv import *
 from models.hovercraft import *
 from util import *
 
+def make_rectangle_center(x, y, xl, yl):
+    A_rect = np.array([[-1, 0],
+                       [1, 0],
+                       [0, -1],
+                       [0, 1]])
+    b = np.array([[-(x - xl/2)], [x + xl/2], [-(y - yl/2)], [y + yl/2]])
+
+    return (A_rect, b)
+    
 def plot_env(fig,map_limits, Obstacles):
     if len(map_limits) == 2:
         # Configure
@@ -16,11 +25,18 @@ def plot_env(fig,map_limits, Obstacles):
         ymin, ymax = map_limits[1]
         plt.xlim(xmin-2, xmax+2)
         plt.ylim(ymin-2, ymax+2)
+        
+        # Visualize the bounding box
+        plt.axhline(y=ymin)
+        plt.axhline(y=ymax)
+        plt.axvline(x=xmin)
+        plt.axvline(x=xmax)
+        
         # # viz obstacles
-        for A, b in Obstacles:
+        for i,(A, b) in enumerate(Obstacles):
             poly = Polygon(ppm.duality.compute_polytope_vertices(A, b))
             x, y = poly.exterior.xy
-            plt.fill(x, y, facecolor='r', alpha=0.3)
+            plt.fill(x, y, facecolor='r', alpha=0.3,label = 'Obstacles' if i==0 else '')
         ax = fig.gca()
         plt.gca().set_aspect('equal', adjustable='box')
         plt.axis('off')

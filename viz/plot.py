@@ -33,8 +33,9 @@ def plot_results(models, limits, Obstacles, Thetas, Goals, ma_segs, name, MO = [
 			axes.plot(tru_x, tru_y, tru_z, 'r--')
 
 	plt.legend()
-	fig.show()
 	if not save_to_path is None:
 		fig.savefig(save_to_path, bbox_inches='tight', pad_inches = 0)
+	plt.show()
+
 	return None
 

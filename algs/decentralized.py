@@ -29,24 +29,36 @@ def decentralized_algo(models, thetas, goals, limits, obstacles,
         node = q.get()
         print("\n-----", times, "-----")
         print("Orders:", node.G.edges)
-        print("Makespan =", node.makespan)
+        print("Flowtime =", node.makespan)
         # Check Collision
+        start_coll = default_timer()
         colliding_agents = node.earliest_colliding_agents(params)
-        print("Colliding Agents:", colliding_agents)
+        print("Collision check time:", default_timer()-start_coll,"Colliding Agents:", colliding_agents)
         # Solution Found
         if colliding_agents == None:
             print("[*] Solution Found!")
             return node.plans
         # Resolve Collision
-        for (j, i) in [colliding_agents, (colliding_agents[1], colliding_agents[0])]:
+        for (j, i) in [colliding_agents, (colliding_agents[1], colliding_agents[0])]: # This is the branching of the PT node.
             # Update Node
             print("\n[*] Split on (%s < %s)"%(j, i))
             new_node = node.copy()
             new_node = new_node.update_node((j, i), params)
-            if new_node == None: print("Infeasiblae")
+            if new_node == None: print("Infeasible")
             else:
                 print("Feasible and Push")
-                q.put(new_node)
+                q.put(new_node) 
+                
+                # The use of priority queue data structure seem to make the algorithm a Best FS instead of DFS.
+                # The authors in S2M2 claim they use DFS when growing the PT in the paper, which is inconsistent with the code.
+
+                # The nodes in the priority queue are always completely sorted, thus for the Best FS.
+                # The nodes in the stack are stored in a LIFO way, thus for the DFS.
+
+                # In the PBS paper, the nodes are stored in a modified stack, I call it the 'greedy stack'. 
+                # It is a stack formed with some priority information. 
+                # Every time only two children nodes are generated. The child with the smaller cost is placed upon the other, thus explored first.
+                # Thus the growth of PT in the PBS paper is a greedy DFS.
     return None
 
 class Node:
@@ -206,8 +218,11 @@ class Node:
         #     Nmin = len(self.plans[k]) + 1
         #     Nmax = Nmin + 2
         Nmin, Nmax = min_segs, max_segs
+
+        # The next line calls the solver for single-agent path planning.
         new_plan = get_gb_xref([models[k]], [thetas[k]], [goals[k]],
                             limits, obstacles, MO, Nmin, Nmax, min_dur = min_dur)
+        
         if new_plan == None:
             print("- No Plan.")
             return None
@@ -215,10 +230,30 @@ class Node:
             # Update Plan and Makespan
             plan = new_plan[0]
             self.plans[k] = plan
+            
+
+            ##########################################################################
             self.makespan = max(plan[-1][0], self.makespan)
             self.makespan = sum([plan[-1][0] for plan in self.plans if plan != None])
+        
+            # The two lines of code above come from the original S2M2 repo. 
+            # They seem to confuse the definition of makespan with flowtime. It could potentially be a bug.
+            # The makespan is the max of all individual travel times. 
+            # The second line is computing the flowtime, the sum of all individual travel times.
+            # The author of this code seems to forget commenting out the first line, and mistakenly used sum() instead of max() when computing makespan. 
+            ###########################################################################
 
-            print("- Feasible Plan Found with Makespan", plan[-1][0])
+            print("- Feasible Plan Found with Single-agent Travel Time", plan[-1][0])
+
+
+
+            # self.makespan = max([plan[-1][0] for plan in self.plans if plan != None])
+            #The line above truly computes the makespan.
+
+            # print("- Feasible Plan Found with Makespan", self.makespan)
+            # The line above truly prints the makespan.
+
+            
             for j in self.higher_agents(k):
                 self.collisions["%s-%s" % (k, j)] = "free"
                 self.collisions["%s-%s" % (j, k)] = "free"

@@ -23,7 +23,10 @@ def animate_results(models,limits, obstacles, Thetas, goals, paths, save_to_path
         tru_patches = []
         err_patches = []        
 
-        def init():
+        def  init_fig():
+            """Initialize the figure, used to draw the first
+            frame for the animation.
+            """
             # An init function is necessary for the blit option in animation to work, but we don't have to do anything in it.
             if len(ref_patches)==0:
                 for idx in range(agent_num):
@@ -43,9 +46,6 @@ def animate_results(models,limits, obstacles, Thetas, goals, paths, save_to_path
             return ref_patches + tru_patches + err_patches
 
         def animate(f):
-            # The f index does not represent the correct frame number if we are using blit.
-            # Everytime init is called, f is reset.
-
             ref, tru = [], []
             for idx in range(agent_num):
                 # Python will automatically parallelize this loop across agents!
@@ -67,7 +67,7 @@ def animate_results(models,limits, obstacles, Thetas, goals, paths, save_to_path
             return ref_patches + tru_patches + err_patches
 
 
-        ani = animation.FuncAnimation(fig, animate, frames = total_frames, init_func = init,
+        ani = animation.FuncAnimation(fig, animate, frames = total_frames, init_func = init_fig,
                                       blit=True, interval = interval)
 
         # fig.subplots_adjust(left=0.01, bottom=0.01, right=0.99, top=0.99, wspace=None, hspace=None)

@@ -1,0 +1,3 @@
+max_segs: 8
+min_segs: 2
+obstacle_segs: 10

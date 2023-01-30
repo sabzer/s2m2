@@ -77,7 +77,8 @@ def ref2traj(ma_nodes):
 	agent_num = len(ma_nodes)
 
 	# compute step size
-	step_num = 10000
+	# step_num = 10000
+	step_num = 100
 	max_t = max([ma_nodes[idx][-1][0] for idx in range(agent_num)])
 
 	step_size = max_t / step_num
