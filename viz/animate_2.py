@@ -21,7 +21,8 @@ def animate_results(models,limits, obstacles, Thetas, goals, paths, save_to_path
 
         ref_patches = []
         tru_patches = []
-        err_patches = []        
+        # err_patches = []       
+        ID = [] 
 
         def  init_fig():
             """Initialize the figure, used to draw the first
@@ -33,20 +34,22 @@ def animate_results(models,limits, obstacles, Thetas, goals, paths, save_to_path
                     # print(idx)
                     ref_x, ref_y, _, tru_x, tru_y, _, times = paths[idx]
                    
-                    ref_patch = plt.Circle((ref_x[0], ref_y[0]), 0, fc='k')
+                    # ref_patch = plt.Circle((ref_x[0], ref_y[0]), 0, fc='k')
                     tru_patch = plt.Circle((tru_x[0], tru_y[0]), models[idx].size, fc='navy', alpha = 0.7,label='True Traj' if idx==0 else '')
-                    err_patch = plt.Circle((ref_x[0], ref_y[0]), models[idx].size, fc='lightsteelblue', alpha = 0.4,label = 'Ref. Traj' if idx==0 else '')
+                    ref_patch = plt.Circle((ref_x[0], ref_y[0]), models[idx].size, fc='lightsteelblue', alpha = 0.4,label = 'Ref. Traj' if idx==0 else '')
+                    id_text = plt.text(tru_x[0], tru_y[0],'{}'.format(idx))
+
                     ref_patches.append(ref_patch)
                     tru_patches.append(tru_patch)
-                    err_patches.append(err_patch)       
+                    ID.append(id_text)
+                    # err_patches.append(err_patch)       
                    
-                for patch in ref_patches + tru_patches + err_patches: axes.add_patch(patch)
+                for patch in ref_patches + tru_patches: axes.add_patch(patch)
                 # print('showing legend')
             plt.legend()
-            return ref_patches + tru_patches + err_patches
+            return ref_patches + tru_patches + ID
 
         def animate(f):
-            ref, tru = [], []
             for idx in range(agent_num):
                 # Python will automatically parallelize this loop across agents!
                 ref_x, ref_y, _, tru_x, tru_y, _, times = paths[idx]
@@ -56,15 +59,19 @@ def animate_results(models,limits, obstacles, Thetas, goals, paths, save_to_path
                     step = step + 1
                 ref_patches[idx].center = (ref_x[step], ref_y[step])
                 tru_patches[idx].center = (tru_x[step], tru_y[step])
-                err_patches[idx].center = (ref_x[step], ref_y[step])
-                if step == len(ref_x) - 1: error = models[idx].size
-                else: error  = (models[idx].size + models[idx].bloating(step))
-                err_patches[idx].width = 2 * error
-                err_patches[idx].height = 2 * error            
+                
+                ID[idx].set_position((tru_x[step], tru_y[step]))
+                
+                
+                # err_patches[idx].center = (ref_x[step], ref_y[step])
+                # if step == len(ref_x) - 1: error = models[idx].size
+                # else: error  = (models[idx].size + models[idx].bloating(step))
+                # err_patches[idx].width = 2 * error
+                # err_patches[idx].height = 2 * error            
 
                 # print('frame',f,'step',step,'total step',len(times),times[step] , tpf * f,times[-1],'total_time',total_time)
 
-            return ref_patches + tru_patches + err_patches
+            return ref_patches + tru_patches + ID
 
 
         ani = animation.FuncAnimation(fig, animate, frames = total_frames, init_func = init_fig,

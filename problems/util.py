@@ -45,10 +45,11 @@ def read_problem(file_name):
         agents = [read_agent(agent) for agent in data["agents"]]
         Thetas = data["starts"]
         Goals = [read_polytope(goal) for goal in data["goals"]]
+        GoalWeights = [data['weights']] if 'weights' in data.keys() else []
+   
+    return [name, limits, Obstacles, agents, Thetas, Goals]+GoalWeights
 
-    return [name, limits, Obstacles, agents, Thetas, Goals]
-
-def write_problem(file_name, name, limits, Obstacles, agents, Thetas, Goals):
+def write_problem(file_name, name, limits, Obstacles, agents, Thetas, Goals,*GoalWeights):
     data = dict()
     data['name'] = name
     data["limits"] = limits
@@ -56,6 +57,8 @@ def write_problem(file_name, name, limits, Obstacles, agents, Thetas, Goals):
     data["agents"] = [write_agent(agent) for agent in agents]
     data["starts"] = Thetas
     data["goals"] = [write_polytope(goal) for goal in Goals]
+    if len(GoalWeights)>0:
+        data['weights'] = GoalWeights[0]
     yaml.Dumper.ignore_aliases = lambda *args: True
     with open(file_name, "w") as file:
         yaml.dump(data, file, indent=4)

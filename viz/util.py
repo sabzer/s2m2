@@ -5,6 +5,7 @@ import mpl_toolkits.mplot3d as a3
 import matplotlib.pyplot as plt
 import pypoman as ppm
 from shapely.geometry.polygon import Polygon
+import polytope as pc
 from models.auv import *
 from models.hovercraft import *
 from util import *
@@ -73,6 +74,11 @@ def plot_goals(Goals):
         poly = Polygon(ppm.duality.compute_polytope_vertices(A, b))
         x, y = poly.exterior.xy
         plt.fill(x, y, facecolor='g', alpha=0.3,label='Goals' if _==0 else '')
+    
+        poly = pc.Polytope(A, b)
+        pt = poly.chebXc  # Find the center of the goal set
+
+        plt.text(*(pt+0.5),"{}".format(_))
 
 def plot_thetas(thetas):
     for _,(x, y) in enumerate(thetas):
@@ -80,6 +86,12 @@ def plot_thetas(thetas):
         poly = Polygon(ppm.duality.compute_polytope_vertices(A, b))
         x, y = poly.exterior.xy
         plt.fill(x, y, facecolor='blue', alpha=0.3,label='Starts' if _==0 else'')
+
+        poly = pc.Polytope(A, b)
+        pt = poly.chebXc  # Find the center of the start set
+
+        plt.text(*(pt+0.5),"{}".format(_))
+
 
 def extract_paths(models, ma_thetas, ma_segs):
     # viz initial states and trajectories
